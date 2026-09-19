@@ -6,6 +6,5 @@
 data
 .git
 .gitignore
-README.md
 AGENTS.md
 tests
