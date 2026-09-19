@@ -46,6 +46,8 @@ def test_upload_lists_and_renders_supported_files(tmp_path):
     assert rendered.mimetype == "text/html"
     assert "Content-Security-Policy" in rendered.headers
     assert b"attachment" not in rendered.headers.get("Content-Disposition", "").lower().encode()
+    assert b"html,body{width:100%;height:100%;margin:0;overflow:hidden}" in rendered.data
+    assert b"Open raw page" in rendered.data
 
     download = client.get(f"/files/{file_id}/download")
     assert download.status_code == 200

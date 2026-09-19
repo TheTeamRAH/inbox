@@ -43,6 +43,7 @@ The repository includes the deployment Compose file used by the extended Compose
 
 | Date | Purpose | Spec | Author |
 | --- | --- | --- | --- |
+| 2026-09-19-16-26 | Full-page HTML preview | [2026-09-19-16-26-full-page-html-preview.md](docs/features/2026-09-19-16-26-full-page-html-preview.md) | whose-footprints-are-these |
 
 No implemented features are recorded yet.
 
