@@ -10,7 +10,7 @@ A lightweight web application for uploading, organising, retaining, and retrievi
 ├── AGENTS.md
 ├── Dockerfile
 ├── README.md
-├── compose.example.yml
+├── docker-compose.yml
 ├── docs/
 │   └── features/
 │       ├── README.md
@@ -37,7 +37,7 @@ Run the development server with:
 uv run inbox
 ```
 
-The optional [Compose example](compose.example.yml) runs the application on port `8080` with persistent state under `./data`. Adapt it for the deployment environment rather than treating it as a required installation method.
+The repository includes the deployment Compose file used by the extended Compose deployment. It builds the local `Dockerfile`, publishes host port `3250` to the application container's port `8080`, and persists state under `/opt/docker/custom_data/inbox` by default. Override `INBOX_DATA_DIR`, `INBOX_RETENTION_DAYS`, or `INBOX_TIMEZONE` when running it elsewhere.
 
 ## Recent Features
 
