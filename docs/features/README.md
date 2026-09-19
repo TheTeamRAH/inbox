@@ -14,4 +14,4 @@ sources:
 
 | Date | Purpose | Spec | Author |
 | --- | --- | --- | --- |
-| 2026-09-19-10-46 | Inbox web application for agentic screenshots and files | [2026-09-19-10-46-inbox-web-app.md](./2026-09-19-10-46-inbox-web-app.md) | whose-footprints-are-these |
+| 2026-09-19-10-46 | File upload and retrieval web application | [2026-09-19-10-46-inbox-web-app.md](./2026-09-19-10-46-inbox-web-app.md) | whose-footprints-are-these |

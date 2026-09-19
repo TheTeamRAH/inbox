@@ -1,6 +1,6 @@
 # Repository Purpose
 
-This repository contains a separate Docker Compose web application for uploading and retrieving screenshots and small files through the restricted `inbox.rah.home` reverse-proxy endpoint for use by the agentic environment.
+This repository contains a lightweight web application for uploading, organising, retaining, and retrieving screenshots and small files. It is intended to be useful as a self-hosted service or as a component of a larger deployment.
 
 ## Communication and Research
 
