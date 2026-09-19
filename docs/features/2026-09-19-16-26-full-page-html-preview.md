@@ -1,7 +1,7 @@
 ---
 type: Feature
 title: Full-page HTML preview
-status: proposed
+status: completed
 description: Render uploaded static HTML pages as a usable full-page preview while retaining isolation and a separate download path.
 tags:
   - html
@@ -57,3 +57,10 @@ viewport while preserving the existing isolation and download behavior.
 - Tests pass for HTML preview, raw HTML security headers, download attachment
   behavior, and the complete application suite.
 - `git diff --check` passes.
+
+## Lifecycle
+
+This specification is completed. The full-page preview wrapper is implemented,
+validated, and included in the Inbox delivery branch. The deployed HTML endpoint
+was read back and verified to return the isolated preview wrapper and raw HTML
+routes.
