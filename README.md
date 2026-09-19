@@ -8,23 +8,42 @@ A lightweight web application for uploading, organising, retaining, and retrievi
 .
 ├── .gitignore
 ├── AGENTS.md
+├── Dockerfile
 ├── README.md
-└── docs/
-    └── features/
-        ├── README.md
-        └── 2026-09-19-10-46-inbox-web-app.md
+├── docker-compose.yml
+├── docs/
+│   └── features/
+│       ├── README.md
+│       └── 2026-09-19-10-46-inbox-web-app.md
+├── pyproject.toml
+├── src/
+│   └── inbox/
+└── tests/
+    └── test_app.py
 ```
 
 ## Getting Started
 
-Implementation is not started yet. Review the proposed [web application specification](docs/features/2026-09-19-10-46-inbox-web-app.md) before adding application files.
+Implementation is in progress. For local development, install the project in an isolated environment and run the tests:
 
-Once implementation begins, verified setup and validation commands will be documented here. An optional Compose example may be provided for users who prefer container-based deployment; the application is not limited to Compose.
+```bash
+uv sync
+uv run pytest
+```
+
+Run the development server with:
+
+```bash
+uv run inbox
+```
+
+The repository includes the deployment Compose file used by the extended Compose deployment. It builds the local `Dockerfile`, publishes host port `3250` to the application container's port `8080`, and persists state under `/opt/docker/custom_data/inbox` by default. Override `INBOX_DATA_DIR`, `INBOX_RETENTION_DAYS`, or `INBOX_TIMEZONE` when running it elsewhere.
 
 ## Recent Features
 
 | Date | Purpose | Spec | Author |
 | --- | --- | --- | --- |
+| 2026-09-19-16-26 | Full-page HTML preview | [2026-09-19-16-26-full-page-html-preview.md](docs/features/2026-09-19-16-26-full-page-html-preview.md) | whose-footprints-are-these |
 
 No implemented features are recorded yet.
 

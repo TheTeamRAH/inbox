@@ -1,0 +1,17 @@
+services:
+  inbox:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: local/inbox:v1
+    container_name: inbox
+    environment:
+      DATABASE_PATH: /app/data/inbox.sqlite3
+      STORAGE_DIR: /app/data/files
+      RETENTION_DAYS: "${INBOX_RETENTION_DAYS:-60}"
+      TIMEZONE: ${INBOX_TIMEZONE:-Europe/London}
+    ports:
+      - "3250:8080"
+    volumes:
+      - ${INBOX_DATA_DIR:-/opt/docker/custom_data/inbox}:/app/data
+    restart: unless-stopped
