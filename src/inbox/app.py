@@ -62,7 +62,23 @@ LIST_TEMPLATE = """
 """
 
 HTML_VIEW_TEMPLATE = """
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{{ name }}</title><style>body{margin:0}iframe{border:0;width:100vw;height:100vh}</style></head><body><iframe title="Uploaded HTML preview" sandbox="allow-scripts" src="{{ raw_url }}"></iframe></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ name }}</title>
+<style>
+html,body{width:100%;height:100%;margin:0;overflow:hidden}
+iframe{display:block;border:0;width:100%;height:100%}
+.raw-link{position:fixed;top:.75rem;right:.75rem;z-index:1;padding:.45rem .7rem;border-radius:.4rem;background:#111c;color:#fff;font:14px system-ui,sans-serif}
+</style>
+</head>
+<body>
+<a class="raw-link" href="{{ raw_url }}" target="_blank" rel="noopener">Open raw page</a>
+<iframe title="Uploaded HTML preview" sandbox="allow-scripts" src="{{ raw_url }}"></iframe>
+</body>
+</html>
 """
 
 
