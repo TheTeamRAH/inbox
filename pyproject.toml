@@ -1,0 +1,29 @@
+[project]
+name = "inbox"
+version = "0.1.0"
+description = "A lightweight self-hosted upload and retrieval web application"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "Flask>=3.1,<4",
+    "gunicorn>=23,<24",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8,<9",
+]
+
+[project.scripts]
+inbox = "inbox.app:main"
+inbox-cleanup = "inbox.cleanup:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/inbox"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

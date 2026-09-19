@@ -15,6 +15,9 @@ __pycache__/
 uploads/
 data/
 
+dist/
+*.egg-info/
+
 # Build and editor state
 .DS_Store
 *.swp

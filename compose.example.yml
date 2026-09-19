@@ -1,0 +1,14 @@
+# Optional generic Compose example. Adapt the published port and storage path.
+services:
+  inbox:
+    build: .
+    environment:
+      DATABASE_PATH: /app/data/inbox.sqlite3
+      STORAGE_DIR: /app/data/files
+      RETENTION_DAYS: "60"
+      TIMEZONE: UTC
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
