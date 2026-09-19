@@ -1,0 +1,20 @@
+# Local environments
+.env
+.env.*
+!.env.example
+.venv/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Runtime state and uploads
+*.db
+*.sqlite
+*.sqlite3
+uploads/
+data/
+
+# Build and editor state
+.DS_Store
+*.swp
