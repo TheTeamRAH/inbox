@@ -41,13 +41,25 @@ def test_upload_lists_and_renders_supported_files(tmp_path):
     assert b"landing-page.html" in listing.data
 
     file_id = listing.data.split(b"/files/")[1].split(b"/")[0].decode()
+    assert f'href="/files/{file_id}/view"'.encode() in listing.data
+    assert b">View<" not in listing.data
+    assert b">Download<" in listing.data
     rendered = client.get(f"/files/{file_id}/view")
     assert rendered.status_code == 200
     assert rendered.mimetype == "text/html"
     assert "Content-Security-Policy" in rendered.headers
-    assert b"attachment" not in rendered.headers.get("Content-Disposition", "").lower().encode()
-    assert b"html,body{width:100%;height:100%;margin:0;overflow:hidden}" in rendered.data
-    assert b"Open raw page" in rendered.data
+    assert "sandbox" in rendered.headers["Content-Security-Policy"]
+    assert "allow-same-origin" not in rendered.headers["Content-Security-Policy"]
+    assert rendered.headers["Content-Disposition"] == "inline"
+    assert rendered.headers["X-Content-Type-Options"] == "nosniff"
+    assert b"<h1>Hello</h1>" in rendered.data
+    assert b"<iframe" not in rendered.data
+    assert b"Open raw page" not in rendered.data
+
+    raw = client.get(f"/files/{file_id}/raw-html")
+    assert raw.status_code == 200
+    assert raw.data == rendered.data
+    assert raw.headers["Content-Security-Policy"] == rendered.headers["Content-Security-Policy"]
 
     download = client.get(f"/files/{file_id}/download")
     assert download.status_code == 200
