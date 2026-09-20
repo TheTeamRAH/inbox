@@ -2,6 +2,10 @@
 
 A lightweight web application for uploading, organising, retaining, and retrieving screenshots and small files. It is designed to be useful as a self-hosted service or as a component of a larger deployment.
 
+## Inbox dashboard
+
+![TheTeamRah Inbox dashboard showing upload controls, file summary cards, filters, an eight-row page-size selector, and the file table.](docs/images/inbox-dashboard.png)
+
 ## Repo Structure
 
 ```text
@@ -12,10 +16,13 @@ A lightweight web application for uploading, organising, retaining, and retrievi
 ├── README.md
 ├── docker-compose.yml
 ├── docs/
-│   └── features/
-│       ├── README.md
-│       ├── 2026-09-20-18-59-inbox-dashboard-pagination.md
-│       └── 2026-09-19-10-46-inbox-web-app.md
+│   ├── features/
+│   │   ├── README.md
+│   │   ├── 2026-09-20-19-45-inbox-direct-file-view.md
+│   │   ├── 2026-09-20-18-59-inbox-dashboard-pagination.md
+│   │   └── 2026-09-19-10-46-inbox-web-app.md
+│   └── images/
+│       └── inbox-dashboard.png
 ├── pyproject.toml
 ├── src/
 │   └── inbox/
