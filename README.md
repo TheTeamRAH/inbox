@@ -14,6 +14,7 @@ A lightweight web application for uploading, organising, retaining, and retrievi
 ├── docs/
 │   └── features/
 │       ├── README.md
+│       ├── 2026-09-20-18-59-inbox-dashboard-pagination.md
 │       └── 2026-09-19-10-46-inbox-web-app.md
 ├── pyproject.toml
 ├── src/
@@ -43,9 +44,8 @@ The repository includes the deployment Compose file used by the extended Compose
 
 | Date | Purpose | Spec | Author |
 | --- | --- | --- | --- |
+| 2026-09-20-18-59 | Inbox dashboard with configurable pagination | [2026-09-20-18-59-inbox-dashboard-pagination.md](docs/features/2026-09-20-18-59-inbox-dashboard-pagination.md) | whose-footprints-are-these |
 | 2026-09-19-16-26 | Full-page HTML preview | [2026-09-19-16-26-full-page-html-preview.md](docs/features/2026-09-19-16-26-full-page-html-preview.md) | whose-footprints-are-these |
-
-No implemented features are recorded yet.
 
 See [all feature specifications](docs/features/README.md).
 

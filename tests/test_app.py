@@ -97,3 +97,50 @@ def test_rejects_unsupported_extensions(tmp_path):
     assert response.status_code == 400
     assert b"Unsupported file type" in response.data
     assert client.get("/api/files").get_json() == []
+
+
+def test_inbox_dashboard_defaults_to_eight_files_and_reports_status_counts(tmp_path):
+    client, _ = make_client(tmp_path)
+    for index in range(10):
+        assert upload(client, f"file-{index}.txt", str(index).encode(), f"file-{index}").status_code == 302
+    latest = client.get("/api/files").get_json()[0]
+    assert client.post(f"/files/{latest['id']}/archive").status_code == 302
+
+    listing = client.get("/")
+
+    assert listing.status_code == 200
+    assert listing.data.count(b"<tbody>") == 1
+    assert listing.data.count(b"<tr>") == 9  # header plus eight file rows
+    assert b">Total files<" in listing.data
+    assert b">10<" in listing.data
+    assert b">Active files<" in listing.data
+    assert b">9<" in listing.data
+    assert b">Archived files<" in listing.data
+    assert b">1<" in listing.data
+    assert b"Pending actions" not in listing.data
+    assert b"<option value=\"8\" selected>8</option>" in listing.data
+
+
+def test_inbox_dashboard_allows_larger_page_size_and_preserves_filters(tmp_path):
+    client, _ = make_client(tmp_path)
+    for index in range(17):
+        assert upload(client, f"file-{index}.txt", str(index).encode(), f"file-{index}").status_code == 302
+
+    listing = client.get("/?period=week&per_page=16&page=2")
+
+    assert listing.status_code == 200
+    assert listing.data.count(b"<tr>") == 2  # header plus one remaining file
+    assert b"<option value=\"16\" selected>16</option>" in listing.data
+    assert b"period=week&amp;page=1&amp;per_page=16" in listing.data
+
+
+def test_inbox_dashboard_invalid_pagination_values_fall_back_safely(tmp_path):
+    client, _ = make_client(tmp_path)
+    for index in range(9):
+        assert upload(client, f"file-{index}.txt", str(index).encode(), f"file-{index}").status_code == 302
+
+    listing = client.get("/?page=-5&per_page=not-a-number")
+
+    assert listing.status_code == 200
+    assert listing.data.count(b"<tr>") == 9
+    assert b"<option value=\"8\" selected>8</option>" in listing.data
