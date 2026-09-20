@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import html
 import os
 import re
 import uuid
@@ -40,6 +39,11 @@ ALLOWED_EXTENSIONS = {
 }
 SLUG_PATTERN = re.compile(r"[^a-z0-9]+")
 PAGE_SIZES = (8, 16, 32, 64)
+HTML_CONTENT_SECURITY_POLICY = (
+    "sandbox allow-scripts; default-src 'none'; style-src 'unsafe-inline'; "
+    "script-src 'unsafe-inline'; img-src data: blob:; font-src data:; "
+    "object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
+)
 
 LIST_TEMPLATE = """
 <!doctype html>
@@ -57,32 +61,11 @@ LIST_TEMPLATE = """
 <section class="metrics" aria-label="Inbox summary"><div class="metric"><strong>{{ total_files }}</strong><span>Total files</span></div><div class="metric"><strong>{{ active_files }}</strong><span>Active files</span></div><div class="metric"><strong>{{ archived_files }}</strong><span>Archived files</span></div></section>
 <nav class="filters" aria-label="File date filters"><a class="{{ 'active' if not period else '' }}" href="{{ url_for('index', per_page=per_page) }}">All</a><a class="{{ 'active' if period == 'today' else '' }}" href="{{ url_for('index', period='today', per_page=per_page) }}">Today</a><a class="{{ 'active' if period == 'week' else '' }}" href="{{ url_for('index', period='week', per_page=per_page) }}">This week</a><a class="{{ 'active' if period == 'month' else '' }}" href="{{ url_for('index', period='month', per_page=per_page) }}">This month</a><form class="page-size" method="get" action="{{ url_for('index') }}"><input type="hidden" name="period" value="{{ period or '' }}"><label for="per-page">Rows per page</label><select id="per-page" name="per_page" onchange="this.form.submit()">{% for size in page_sizes %}<option value="{{ size }}"{{ ' selected' if size == per_page else '' }}>{{ size }}</option>{% endfor %}</select></form></nav>
 <div class="table-wrap"><table class="file-table"><thead><tr><th>File</th><th>Uploaded</th><th>Size</th><th>State</th><th>Actions</th></tr></thead><tbody>
-{% for item in files %}<tr><td>{{ item.stored_name }}</td><td>{{ item.uploaded_at }}</td><td>{{ item.size }}</td><td><span class="state">{{ 'Archived' if item.archived else 'Active' }}</span></td><td class="actions"><a href="{{ url_for('view_file', file_id=item.id) }}">View</a><a href="{{ url_for('download_file', file_id=item.id) }}">Download</a><form method="post" action="{{ url_for('archive_file', file_id=item.id) }}"><button>{{ 'Unarchive' if item.archived else 'Archive' }}</button></form></td></tr>{% else %}<tr><td class="empty" colspan="5">No files match this filter.</td></tr>{% endfor %}
+{% for item in files %}<tr><td><a href="{{ url_for('view_file', file_id=item.id) }}">{{ item.stored_name }}</a></td><td>{{ item.uploaded_at }}</td><td>{{ item.size }}</td><td><span class="state">{{ 'Archived' if item.archived else 'Active' }}</span></td><td class="actions"><a href="{{ url_for('download_file', file_id=item.id) }}">Download</a><form method="post" action="{{ url_for('archive_file', file_id=item.id) }}"><button>{{ 'Unarchive' if item.archived else 'Archive' }}</button></form></td></tr>{% else %}<tr><td class="empty" colspan="5">No files match this filter.</td></tr>{% endfor %}
 </tbody></table></div>
 <nav class="pagination" aria-label="Pagination"><span>Showing {{ start_index }}–{{ end_index }} of {{ total_files }} files</span><span class="pages">{% if page > 1 %}<a href="{{ url_for('index', period=period, page=page - 1, per_page=per_page) }}">Previous</a>{% endif %}{% for page_number in range(1, page_count + 1) %}<a class="{{ 'active' if page_number == page else '' }}" href="{{ url_for('index', period=period, page=page_number, per_page=per_page) }}">{{ page_number }}</a>{% endfor %}{% if page < page_count %}<a href="{{ url_for('index', period=period, page=page + 1, per_page=per_page) }}">Next</a>{% endif %}</span></nav></main>
 </body></html>
 """
-
-HTML_VIEW_TEMPLATE = """
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{{ name }}</title>
-<style>
-html,body{width:100%;height:100%;margin:0;overflow:hidden}
-iframe{display:block;border:0;width:100%;height:100%}
-.raw-link{position:fixed;top:.75rem;right:.75rem;z-index:1;padding:.45rem .7rem;border-radius:.4rem;background:#111c;color:#fff;font:14px system-ui,sans-serif}
-</style>
-</head>
-<body>
-<a class="raw-link" href="{{ raw_url }}" target="_blank" rel="noopener">Open raw page</a>
-<iframe title="Uploaded HTML preview" sandbox="allow-scripts" src="{{ raw_url }}"></iframe>
-</body>
-</html>
-"""
-
 
 def create_app(test_config: dict[str, Any] | None = None) -> Flask:
     """Create and configure the Inbox Flask application.
@@ -277,32 +260,23 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
 
     @app.get("/files/<file_id>/view")
     def view_file(file_id: str):
-        """Render a stored file inline or load its isolated HTML viewer.
+        """Render a stored file inline, including HTML as a full-page document.
 
         Args:
             file_id: Opaque ID from the file listing or API response.
 
         Returns:
-            An inline response using the stored MIME type, or a sandboxed HTML
-            viewer for uploaded HTML documents.
+            An inline response using the stored MIME type. HTML documents are
+            returned directly with a restrictive content security policy.
 
         Examples:
-            ``GET /files/abc123/view`` renders a PNG as an image and wraps an
-            HTML upload in the restricted viewer page.
+            ``GET /files/abc123/view`` renders a PNG as an image or returns the
+            uploaded HTML document directly.
         """
         item = require_item(app, file_id)
-        if item["mime_type"] == "text/html":
-            response = Response(
-                render_template_string(
-                    HTML_VIEW_TEMPLATE,
-                    name=html.escape(item["stored_name"]),
-                    raw_url=url_for("raw_html", file_id=file_id),
-                ),
-                mimetype="text/html",
-            )
-            response.headers["Content-Security-Policy"] = "default-src 'self'; frame-src 'self'; object-src 'none'; base-uri 'none'"
-            return response
         path = Path(app.config["STORAGE_DIR"]) / item["stored_name"]
+        if item["mime_type"] == "text/html":
+            return secure_html_response(path)
         return Response(path.read_bytes(), mimetype=item["mime_type"])
 
     @app.get("/files/<file_id>/raw-html")
@@ -324,10 +298,7 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
         if item["mime_type"] != "text/html":
             abort(404)
         path = Path(app.config["STORAGE_DIR"]) / item["stored_name"]
-        response = Response(path.read_bytes(), mimetype="text/html")
-        response.headers["Content-Security-Policy"] = "default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data: blob:; font-src data:; object-src 'none'; base-uri 'none'; form-action 'none'"
-        response.headers["X-Content-Type-Options"] = "nosniff"
-        return response
+        return secure_html_response(path)
 
     @app.get("/files/<file_id>/download")
     def download_file(file_id: str):
@@ -351,6 +322,27 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
         return response
 
     return app
+
+
+def secure_html_response(path: Path) -> Response:
+    """Return an uploaded HTML file as an isolated inline response.
+
+    Args:
+        path: Filesystem path to the uploaded HTML payload.
+
+    Returns:
+        A response containing the original HTML bytes with a restrictive CSP,
+        inline content disposition, and MIME-type sniffing protection.
+
+    Examples:
+        ``secure_html_response(Path("data/files/example.html"))`` returns a
+        full-page HTML response that cannot use the Inbox origin.
+    """
+    response = Response(path.read_bytes(), mimetype="text/html")
+    response.headers["Content-Security-Policy"] = HTML_CONTENT_SECURITY_POLICY
+    response.headers["Content-Disposition"] = "inline"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    return response
 
 
 def require_item(app: Flask, file_id: str) -> dict[str, Any]:

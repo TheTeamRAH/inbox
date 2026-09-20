@@ -44,6 +44,7 @@ The repository includes the deployment Compose file used by the extended Compose
 
 | Date | Purpose | Spec | Author |
 | --- | --- | --- | --- |
+| 2026-09-20-19-45 | Direct file viewing from the inbox | [2026-09-20-19-45-inbox-direct-file-view.md](docs/features/2026-09-20-19-45-inbox-direct-file-view.md) | whose-footprints-are-these |
 | 2026-09-20-18-59 | Inbox dashboard with configurable pagination | [2026-09-20-18-59-inbox-dashboard-pagination.md](docs/features/2026-09-20-18-59-inbox-dashboard-pagination.md) | whose-footprints-are-these |
 | 2026-09-19-16-26 | Full-page HTML preview | [2026-09-19-16-26-full-page-html-preview.md](docs/features/2026-09-19-16-26-full-page-html-preview.md) | whose-footprints-are-these |
 
