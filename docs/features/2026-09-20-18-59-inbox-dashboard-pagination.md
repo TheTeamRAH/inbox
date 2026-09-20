@@ -12,7 +12,7 @@ sources:
     url: https://github.com/TheTeamRAH/inbox
   - title: TheTeamRah inbox visual reference
     url: https://github.com/TheTeamRAH/inbox
-status: proposed
+status: completed
 author: whose-footprints-are-these
 ---
 

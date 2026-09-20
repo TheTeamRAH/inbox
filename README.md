@@ -47,8 +47,6 @@ The repository includes the deployment Compose file used by the extended Compose
 | 2026-09-20-18-59 | Inbox dashboard with configurable pagination | [2026-09-20-18-59-inbox-dashboard-pagination.md](docs/features/2026-09-20-18-59-inbox-dashboard-pagination.md) | whose-footprints-are-these |
 | 2026-09-19-16-26 | Full-page HTML preview | [2026-09-19-16-26-full-page-html-preview.md](docs/features/2026-09-19-16-26-full-page-html-preview.md) | whose-footprints-are-these |
 
-No implemented features are recorded yet.
-
 See [all feature specifications](docs/features/README.md).
 
 ## Contributing
